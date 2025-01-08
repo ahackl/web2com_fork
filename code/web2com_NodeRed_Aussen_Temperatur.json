@@ -1,0 +1,216 @@
+[
+    {
+    "id": "fc678ec3c50bf41f",
+    "type": "http request",
+    "z": "88f3ea6c2024b905",
+    "name": "",
+    "method": "POST",
+    "ret": "txt",
+    "paytoqs": "body",
+    "url": "http://192.168.0.140/ws",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "digest",
+    "senderr": false,
+    "headers": [],
+    "x": 130,
+    "y": 1360,
+    "wires": [
+    [
+    "431a1dfcdc37c331"
+    ]
+    ]
+    },
+    {
+    "id": "4259c977bbcfeb1c",
+    "type": "template",
+    "z": "88f3ea6c2024b905",
+    "name": "Get oid value XML",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "plain",
+    "template": "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"\n xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"\n xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n xmlns:ns=\"http://ws01.lom.ch/soap/\">\n <SOAP-ENV:Body>\n <ns:getDpRequest>\n <ref><oid>/1/3/4/119/1</oid></ref> \n <startIndex>0</startIndex>\n <count>1</count>\n </ns:getDpRequest> \n </SOAP-ENV:Body>\n</SOAP-ENV:Envelope>",
+    "output": "str",
+    "x": 330,
+    "y": 1300,
+    "wires": [
+    [
+    "fc678ec3c50bf41f"
+    ]
+    ]
+    },
+    {
+    "id": "55d9327c20d0ced1",
+    "type": "inject",
+    "z": "88f3ea6c2024b905",
+    "name": "",
+    "props": [
+    {
+    "p": "payload"
+    },
+    {
+    "p": "topic",
+    "vt": "str"
+    }
+    ],
+    "repeat": "60",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 130,
+    "y": 1300,
+    "wires": [
+    [
+    "4259c977bbcfeb1c"
+    ]
+    ]
+    },
+    {
+    "id": "431a1dfcdc37c331",
+    "type": "xml",
+    "z": "88f3ea6c2024b905",
+    "name": "",
+    "property": "payload",
+    "attr": "",
+    "chr": "",
+    "x": 290,
+    "y": 1360,
+    "wires": [
+    [
+    "c6480ed297e81633"
+    ]
+    ]
+    },
+    {
+    "id": "cf54ea9292be36c3",
+    "type": "debug",
+    "z": "88f3ea6c2024b905",
+    "name": "debug 8",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 780,
+    "y": 1360,
+    "wires": []
+    },
+    {
+    "id": "1ffacba27dfb7be3",
+    "type": "knxUltimate",
+    "z": "88f3ea6c2024b905",
+    "server": "e065fb006e778388",
+    "topic": "1/6/0",
+    "setTopicType": "str",
+    "outputtopic": "1/6/0",
+    "dpt": "9.001",
+    "initialread": "0",
+    "notifyreadrequest": false,
+    "notifyresponse": false,
+    "notifywrite": true,
+    "notifyreadrequestalsorespondtobus": false,
+    "notifyreadrequestalsorespondtobusdefaultvalue ifno tinitialized": "0",
+    "listenallga": false,
+    "name": "",
+    "outputtype": "write",
+    "outputRBE": "false",
+    "inputRBE": "false",
+    "formatmultiplyvalue": 1,
+    "formatnegativevalue": "leave",
+    "formatdecimalsvalue": 999,
+    "passthrough": "no",
+    "x": 790,
+    "y": 1300,
+    "wires": [
+    [
+    "cf54ea9292be36c3"
+    ]
+    ]
+    },
+    {
+    "id": "c6480ed297e81633",
+    "type": "function",
+    "z": "88f3ea6c2024b905",
+    "name": "Get oid name & value",
+    "func": "// Get oid value\nvar name = msg.payload[\"SOAP-ENV:Envelope\"][\"SOAP-ENV:Body\"][0][\"ns:getDpResponse\"][0].ref[0].oid[0];\nvar temperature = Number.parseFloat(msg.payload[\"SOAP-ENV:Envelope\"][\"SOAP-ENV:Body\"][0][\"ns:getDpResponse\"][0].dpCfg[0].value[0]);\n\nif (Number.isNaN(temperature) == false)\n{\n // Compose payload\n msg.measurement = \"Aussentemperatur\";\n \n msg.payload = {\n temperature\n };\n return msg; \n}",
+    "outputs": 1,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 580,
+    "y": 1300,
+    "wires": [
+    [
+    "50f0191997e66ad1"
+    ]
+    ]
+    },
+    {
+    "id": "50f0191997e66ad1",
+    "type": "change",
+    "z": "88f3ea6c2024b905",
+    "name": "Temperature",
+    "rules": [
+    {
+    "t": "set",
+    "p": "payload",
+    "pt": "msg",
+    "to": "payload.temperature",
+    "tot": "msg"
+    }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false,
+    "x": 550,
+    "y": 1360,
+    "wires": [
+    [
+    "1ffacba27dfb7be3"
+    ]
+    ]
+    },
+    {
+    "id": "c2263994e641b3ad",
+    "type": "comment",
+    "z": "88f3ea6c2024b905",
+    "name": "web2com Aussen Temperatur",
+    "info": "",
+    "x": 160,
+    "y": 1260,
+    "wires": []
+    },
+    {
+    "id": "e065fb006e778388",
+    "type": "knxUltimate-config",
+    "host": "192.168.0.147",
+    "port": "3671",
+    "physAddr": "15.15.250",
+    "hostProtocol": "TunnelUDP",
+    "suppressACKRequest": true,
+    "csv": "",
+    "KNXEthInterface": "ens3",
+    "KNXEthInterfaceManuallyInput": "",
+    "stopETSImportIfNoDatapoint": "stop",
+    "loglevel": "error",
+    "name": "KNX Gateway",
+    "localEchoInTunneling": true,
+    "delaybetweentelegrams": "50",
+    "delaybetweentelegramsfurtherdelayREAD": "1",
+    "ignoreTelegramsWithRepeatedFlag": false,
+    "autoReconnect": "yes"
+    }
+    ]
