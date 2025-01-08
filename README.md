@@ -15,7 +15,7 @@ The example shows how to set the hot water heating operating mode.
 
 ![web2com example flow set OID value](web2comSetOIDValue.jpg)
 
-## Examples
+## Examples with KNX integration
 
 ![web2com_NodeRed_Aussen_Temperatur](web2com_NodeRed_Aussen_Temperatur.png)
 
